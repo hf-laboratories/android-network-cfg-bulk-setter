@@ -1,8 +1,32 @@
 #!/system/bin/sh
+# ┌─────────────────────────────────────────────────────────────────────────────┐
+# │    __                                                                        │
+# │ |__|__                                                                       │
+# │ |   |                                                                        │
+# │                                                                              │
+# ├──────────────────────────────────────────────────────────────────────────────┤
+# │                           Laboratories                                       │
+# └──────────────────────────────────────────────────────────────────────────────┘
+#
 # read-network-settings.sh
 # 
 # A script to read and display current network settings from an Android system
 # based on the configuration defined in android-network-keys.json
+#
+# Copyright (C) 2024 HF Laboratories
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 # Note: On Android devices, the shebang should be #!/system/bin/sh
 # For testing on non-Android systems, use #!/bin/sh or #!/bin/bash

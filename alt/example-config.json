@@ -1,4 +1,13 @@
 {
+  "_comment": "┌─────────────────────────────────────────────────────────────────────────────┐",
+  "_comment2": "│    __                                                                        │",
+  "_comment3": "│ |__|__                                                                       │",
+  "_comment4": "│ |   |                                                                        │",
+  "_comment5": "│                                                                              │",
+  "_comment6": "├──────────────────────────────────────────────────────────────────────────────┤",
+  "_comment7": "│                           Laboratories                                       │",
+  "_comment8": "└──────────────────────────────────────────────────────────────────────────────┘",
+  "_license": "Copyright (C) 2024 HF Laboratories. Licensed under GPLv3. See LICENSE file.",
   "version": "1.0",
   "description": "Example configuration for demonstration",
   "categories": {
