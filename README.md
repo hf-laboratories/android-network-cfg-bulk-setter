@@ -12,7 +12,9 @@
   └──────────────┘
 ```
 
-A comprehensive collection of all property and environment configuration keys related to networking on Android Linux.
+A comprehensive collection of all property and environment configuration keys related to networking on Android Linux, 
+as well as utilities to parse key:value data from json, Backup settings, Restore Settings, read keys:values from the system, 
+and apply values utilizing a combination of 5 different types of config (listed below).
 
 ## Overview
 
@@ -22,36 +24,41 @@ This repository documents Android networking configuration keys including:
 - Kernel parameters (`/proc/sys/net/`)
 - Network interface files (`/sys/class/net/`)
 - Android Settings database entries
-- **Best-effort default values** for each configuration key to enable resetting to defaults
 
 ## Documentation
 
 ### Main Network Utilities
 
 - **[read-network-settings.sh](read-network-settings.sh)** - Shell script to read current network settings
-
+```md
 - - **[READ_SCRIPT_README.md](READ_SCRIPT_README.md)** - Documentation for the network settings reader script
-
+```
 - **[apply-network-defaults.sh](apply-network-defaults.sh)** - Shell script to apply default network settings
-
+```md
 - - **[SCRIPT_README.md](SCRIPT_README.md)** - Documentation for the network configuration script
-
+```
 - **[backup-network-settings.sh](backup-network-settings.sh)** - Shell script to backup current network settings
 - **[restore-network-settings.sh](restore-network-settings.sh)** - Shell script to restore network settings from backup
-
+```md
 - - **[BACKUP_RESTORE_README.md](BACKUP_RESTORE_README.md)** - Documentation for backup and restore scripts
-
+```
 - **[json-parser.sh](json-parser.sh)** - POSIX-compliant JSON parser (no external dependencies)
+```md
 - **[android-network-keys.json](android-network-keys.json)** - Machine-readable JSON format
-
+```
+```md
 - - **[NETWORK_KEYS.md](NETWORK_KEYS.md)** - Human-readable documentation with tables and usage examples
-
+```
 ### Generic Configuration Utility (`/alt` directory)
 
 - **[alt/generic-apply-settings.sh](alt/generic-apply-settings.sh)** - Generic utility for applying any system settings
+```md
 - **[alt/template-config.json](alt/template-config.json)** - Template showing configuration format
 - **[alt/example-config.json](alt/example-config.json)** - Example configuration file
-- **[alt/README.md](alt/README.md)** - Documentation for the generic utility
+```
+```md
+- - **[alt/README.md](alt/README.md)** - Documentation for the generic utility
+```
 
 The `/alt` directory contains a generic, open-ended configuration utility that works with arbitrary categories and key-value pairs, suitable for any system configuration needs beyond just networking.
 Feed the example/template into copilot. ask for settings of any variety, to be listed according to the input json as schema, in a new output.json. save the json. chmod the sh file. run the sh file pointing it to your output.json
