@@ -360,7 +360,7 @@ execute_custom_command() {
         return 0
     fi
     
-    if eval "$command" 2>/dev/null; then
+    if sh -c "$command" 2>/dev/null; then
         log_verbose "Successfully executed command"
         return 0
     else

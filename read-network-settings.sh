@@ -268,7 +268,9 @@ JSON_FIRST_ITEM=1
 # Escape special characters for JSON strings
 escape_json_string() {
     local str="$1"
-    echo "$str" | sed 's/\\/\\\\/g; s/"/\\"/g; s/\t/\\t/g; s/\r/\\r/g; s/\n/\\n/g'
+    # Read entire input into pattern space, then escape special characters
+    # Escape backslashes first, then quotes, forward slashes, and control characters
+    echo "$str" | sed ':a;N;$!ba;s/\\/\\\\/g; s/"/\\"/g; s/\//\\\//g; s/\t/\\t/g; s/\r/\\r/g; s/\n/\\n/g'
 }
 
 # Initialize JSON output
