@@ -16,10 +16,37 @@ This repository documents Android networking configuration keys including:
 
 - **[NETWORK_KEYS.md](NETWORK_KEYS.md)** - Human-readable documentation with tables and usage examples
 - **[android-network-keys.json](android-network-keys.json)** - Machine-readable JSON format
+- **[read-network-settings.sh](read-network-settings.sh)** - Shell script to read current network settings
+- **[READ_SCRIPT_README.md](READ_SCRIPT_README.md)** - Documentation for the network settings reader script
 - **[apply-network-defaults.sh](apply-network-defaults.sh)** - Shell script to apply default network settings
 - **[SCRIPT_README.md](SCRIPT_README.md)** - Documentation for the network configuration script
 
 ## Quick Start
+
+### Reading Current Network Settings
+
+```bash
+# Read all current network settings
+adb push read-network-settings.sh /data/local/tmp/
+adb push android-network-keys.json /data/local/tmp/
+adb shell
+cd /data/local/tmp
+./read-network-settings.sh
+
+# Read settings in JSON format
+./read-network-settings.sh -o json
+
+# Read specific category (e.g., WiFi)
+./read-network-settings.sh -c wifi
+
+# Compare current values with defaults
+./read-network-settings.sh -s
+
+# Compact output for quick overview
+./read-network-settings.sh -o compact
+```
+
+For detailed usage of the reader script, see [READ_SCRIPT_README.md](READ_SCRIPT_README.md).
 
 ### Viewing Properties on Android
 
@@ -80,12 +107,14 @@ The collection is organized into the following categories:
 
 ## Use Cases
 
-- **Network debugging** - Understanding current network configuration
+- **Reading current settings** - View and export current network configuration from Android devices
+- **Network debugging** - Understanding current network configuration and comparing against defaults
 - **Device development** - Configuring network settings for custom Android builds
-- **Testing** - Simulating different network conditions
+- **Testing** - Simulating different network conditions and verifying changes
 - **Documentation** - Reference for Android networking internals
-- **Automation** - Scripting network configuration changes
+- **Automation** - Scripting network configuration changes and monitoring
 - **Reset to defaults** - Using provided default values to restore network settings to a known good state
+- **Configuration auditing** - Compare current values against documented defaults to identify deviations
 
 ## Default Values
 
