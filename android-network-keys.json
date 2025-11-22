@@ -57,26 +57,26 @@
         "gsm.operator.alpha": {
           "description": "Mobile operator name",
           "type": "string",
-          "example": "T-Mobile",
-          "default": ""
+          "example": "US Mobile",
+          "default": "US Mobile"
         },
         "gsm.operator.numeric": {
           "description": "Mobile country code + mobile network code",
           "type": "string",
-          "example": "310260",
-          "default": ""
+          "example": "310410",
+          "default": "310410"
         },
         "gsm.operator.iso-country": {
           "description": "ISO country code for operator",
           "type": "string",
           "example": "us",
-          "default": ""
+          "default": "us"
         },
         "gsm.network.type": {
           "description": "Current network type",
           "type": "string",
           "example": "LTE",
-          "default": "UNKNOWN"
+          "default": "LTE"
         },
         "ril.subscription.types": {
           "description": "SIM subscription types",
