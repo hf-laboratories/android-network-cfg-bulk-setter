@@ -10,6 +10,7 @@
 - **Kernel Parameters**: Configures kernel networking parameters via `sysctl` or direct writes to `/proc/sys/net/`
 - **Environment Variables**: Sets environment variables for network configuration
 - **Android Settings**: Modifies Android Settings database entries using the `settings` command
+- **Automatic Backup**: Creates backups before applying changes (first-run and pre-apply backups)
 - **Dry-run Mode**: Preview changes without applying them
 - **Verbose Logging**: Detailed output of all operations
 - **Error Handling**: Graceful failure handling with informative messages
@@ -19,7 +20,8 @@
 ### System Requirements
 - Android system or Linux system with Android networking tools
 - Root or system-level permissions (for most operations)
-- `jq` - JSON parser (for reading configuration file)
+- Standard POSIX tools (awk, sed, grep) - available by default on Android
+- `json-parser.sh` - included JSON parser library (no external dependencies)
 
 ### Optional Tools
 - `setprop` - For setting system properties (Android)
@@ -28,19 +30,12 @@
 
 ## Installation
 
-1. Ensure the script is executable:
+1. Ensure the scripts are executable:
    ```bash
-   chmod +x apply-network-defaults.sh
+   chmod +x apply-network-defaults.sh json-parser.sh
    ```
 
-2. Install `jq` if not already available:
-   ```bash
-   # On Debian/Ubuntu
-   apt-get install jq
-   
-   # On Android (with Termux)
-   pkg install jq
-   ```
+2. Ensure both `apply-network-defaults.sh` and `json-parser.sh` are in the same directory.
 
 3. Ensure the `android-network-keys.json` configuration file is in the same directory as the script (or specify a custom path with `-f`).
 
@@ -49,17 +44,20 @@
 ### Basic Usage
 
 ```bash
-# Apply defaults (requires root permissions)
+# Apply defaults (requires root permissions, will prompt for confirmation)
 ./apply-network-defaults.sh
 
-# Dry-run mode (preview without applying)
+# Skip confirmation prompt
+./apply-network-defaults.sh -y
+
+# Dry-run mode (preview without applying, no confirmation needed)
 ./apply-network-defaults.sh -d
 
 # Verbose output
 ./apply-network-defaults.sh -v
 
 # Combine options
-./apply-network-defaults.sh -d -v
+./apply-network-defaults.sh -y -v
 ```
 
 ### Using a Custom Configuration File
@@ -74,7 +72,8 @@
 |--------|-------------|
 | `-f, --file <path>` | Path to JSON configuration file (default: `android-network-keys.json`) |
 | `-v, --verbose` | Enable verbose output showing all operations |
-| `-d, --dry-run` | Show what would be applied without making changes |
+| `-d, --dry-run` | Show what would be applied without making changes (skips confirmation) |
+| `-y, --yes` | Skip confirmation prompt and apply changes immediately |
 | `-h, --help` | Display help message |
 
 ## Configuration File Format
@@ -135,6 +134,52 @@ The script reads configuration from a JSON file structured as follows:
 - The `default` field should not be `null` or empty
 
 ## Behavior
+
+### Automatic Backup
+
+Before applying any changes, the script automatically creates a backup of current network settings:
+
+**First Run Behavior:**
+- When the script is run for the first time (no `./backups/` directory exists or is empty)
+- Creates a backup named "first-run" 
+- Description: "Automatic backup on first run"
+- This preserves the initial state of the system
+
+**Subsequent Runs:**
+- On all subsequent runs (when backups already exist)
+- Creates a backup named "pre-apply"
+- Description: "Automatic backup before applying defaults"
+- This allows you to restore to the state before the last apply operation
+
+**Backup Location:**
+- All backups are stored in `./backups/` directory
+- Each backup is tracked in `./backups/metadata.json`
+- Backups are in JSON format and can be restored using `restore-network-settings.sh`
+
+**Skipped:**
+- Backups are skipped in dry-run mode (`-d` flag)
+- If backup script is not available, a warning is shown but apply continues
+
+Example backup metadata:
+```json
+{
+  "version": "1.0",
+  "backups": [
+    {
+      "name": "first-run",
+      "file": "backup_first-run.json",
+      "timestamp": "2025-11-22T07:00:00Z",
+      "description": "Automatic backup on first run"
+    },
+    {
+      "name": "pre-apply",
+      "file": "backup_pre-apply.json",
+      "timestamp": "2025-11-22T08:00:00Z",
+      "description": "Automatic backup before applying defaults"
+    }
+  ]
+}
+```
 
 ### System Properties
 
@@ -271,16 +316,13 @@ EOF
 
 ## Troubleshooting
 
-### "jq is not installed"
+### "Required tools not found"
 
-Install jq:
-```bash
-# Debian/Ubuntu (requires root/sudo)
-sudo apt-get install jq
+The script requires standard POSIX tools (awk, sed, grep) which should be available by default on Android. If you get this error on a non-Android Linux system, install the missing tools using your package manager.
 
-# Android with Termux
-pkg install jq
-```
+### "json-parser.sh not found"
+
+Ensure both `apply-network-defaults.sh` and `json-parser.sh` are in the same directory. Both files are required for the script to work.
 
 ### "Failed to set property (may require root)"
 

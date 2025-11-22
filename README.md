@@ -14,12 +14,55 @@ This repository documents Android networking configuration keys including:
 
 ## Documentation
 
+### Main Network Utilities
+
 - **[NETWORK_KEYS.md](NETWORK_KEYS.md)** - Human-readable documentation with tables and usage examples
 - **[android-network-keys.json](android-network-keys.json)** - Machine-readable JSON format
+- **[json-parser.sh](json-parser.sh)** - POSIX-compliant JSON parser (no external dependencies)
+- **[read-network-settings.sh](read-network-settings.sh)** - Shell script to read current network settings
+- **[READ_SCRIPT_README.md](READ_SCRIPT_README.md)** - Documentation for the network settings reader script
 - **[apply-network-defaults.sh](apply-network-defaults.sh)** - Shell script to apply default network settings
 - **[SCRIPT_README.md](SCRIPT_README.md)** - Documentation for the network configuration script
+- **[backup-network-settings.sh](backup-network-settings.sh)** - Shell script to backup current network settings
+- **[restore-network-settings.sh](restore-network-settings.sh)** - Shell script to restore network settings from backup
+- **[BACKUP_RESTORE_README.md](BACKUP_RESTORE_README.md)** - Documentation for backup and restore scripts
+
+### Generic Configuration Utility (`/alt` directory)
+
+- **[alt/generic-apply-settings.sh](alt/generic-apply-settings.sh)** - Generic utility for applying any system settings
+- **[alt/template-config.json](alt/template-config.json)** - Template showing configuration format
+- **[alt/example-config.json](alt/example-config.json)** - Example configuration file
+- **[alt/README.md](alt/README.md)** - Documentation for the generic utility
+
+The `/alt` directory contains a generic, open-ended configuration utility that works with arbitrary categories and key-value pairs, suitable for any system configuration needs beyond just networking.
 
 ## Quick Start
+
+### Reading Current Network Settings
+
+```bash
+# Read ALL current network settings (default action)
+adb push read-network-settings.sh /data/local/tmp/
+adb push json-parser.sh /data/local/tmp/
+adb push android-network-keys.json /data/local/tmp/
+adb shell
+cd /data/local/tmp
+./read-network-settings.sh
+
+# Read settings in JSON format
+./read-network-settings.sh -o json
+
+# Read specific category (e.g., WiFi)
+./read-network-settings.sh -c wifi
+
+# Compare current values with defaults
+./read-network-settings.sh -s
+
+# Compact output for quick overview
+./read-network-settings.sh -o compact
+```
+
+For detailed usage of the reader script, see [READ_SCRIPT_README.md](READ_SCRIPT_README.md).
 
 ### Viewing Properties on Android
 
@@ -47,19 +90,68 @@ adb shell ls -la /proc/sys/net/
 ### Applying Network Defaults
 
 ```bash
-# Apply default network settings (requires root)
+# Apply default settings to ALL network configurations (requires root, will prompt for confirmation)
 adb push apply-network-defaults.sh /data/local/tmp/
+adb push json-parser.sh /data/local/tmp/
 adb push android-network-keys.json /data/local/tmp/
 adb shell
 su
 cd /data/local/tmp
-./apply-network-defaults.sh -v
+./apply-network-defaults.sh
 
-# Dry-run mode to preview changes
-./apply-network-defaults.sh -d -v
+# Skip confirmation prompt
+./apply-network-defaults.sh -y
+
+# Dry-run mode to preview changes (no confirmation needed)
+./apply-network-defaults.sh -d
+
+# Verbose output with confirmation skip
+./apply-network-defaults.sh -y -v
 ```
 
 For detailed usage of the configuration script, see [SCRIPT_README.md](SCRIPT_README.md).
+
+### Backup and Restore Network Settings
+
+```bash
+# Create a backup of current network settings
+adb push backup-network-settings.sh /data/local/tmp/
+adb push read-network-settings.sh /data/local/tmp/
+adb push json-parser.sh /data/local/tmp/
+adb push android-network-keys.json /data/local/tmp/
+adb shell
+cd /data/local/tmp
+./backup-network-settings.sh -n "pre-update" -d "Before system update"
+
+# List available backups
+./restore-network-settings.sh -l
+
+# Restore from backup (requires root)
+su
+./restore-network-settings.sh -n "pre-update"
+```
+
+For detailed usage of backup and restore scripts, see [BACKUP_RESTORE_README.md](BACKUP_RESTORE_README.md).
+
+### Using the Generic Configuration Utility
+
+For applying any system settings beyond networking:
+
+```bash
+# Navigate to alt directory
+cd alt
+
+# Apply generic configuration with dry-run
+./generic-apply-settings.sh -f template-config.json -d -v
+
+# Apply custom configuration
+./generic-apply-settings.sh -f myconfig.json -y
+
+# Apply only specific category
+./generic-apply-settings.sh -f myconfig.json -c system_properties
+```
+
+The generic utility supports open-ended categories and key-value pairs, making it suitable for any system configuration needs. See [alt/README.md](alt/README.md) for details.
 
 ## Categories
 
@@ -80,12 +172,16 @@ The collection is organized into the following categories:
 
 ## Use Cases
 
-- **Network debugging** - Understanding current network configuration
+- **Reading current settings** - View and export current network configuration from Android devices
+- **Backup and restore** - Save current network state and restore to previous configurations with metadata tracking
+- **Network debugging** - Understanding current network configuration and comparing against defaults
 - **Device development** - Configuring network settings for custom Android builds
-- **Testing** - Simulating different network conditions
+- **Testing** - Simulating different network conditions and verifying changes, with ability to restore previous state
 - **Documentation** - Reference for Android networking internals
-- **Automation** - Scripting network configuration changes
+- **Automation** - Scripting network configuration changes and monitoring
 - **Reset to defaults** - Using provided default values to restore network settings to a known good state
+- **Configuration auditing** - Compare current values against documented defaults to identify deviations
+- **Safe experimentation** - Make changes with confidence knowing you can restore to a known good state
 
 ## Default Values
 
