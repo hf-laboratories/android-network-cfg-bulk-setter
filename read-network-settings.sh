@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/system/bin/sh
 # read-network-settings.sh
 # 
 # A script to read and display current network settings from an Android system
@@ -19,7 +19,7 @@
 #   -h, --help                 Display this help message
 #
 # Requirements:
-#   - jq for JSON parsing
+#   - Standard POSIX tools (awk, sed, grep) - available by default on Android
 #   - Android system with standard networking tools (optional: getprop, settings)
 
 # Default values
@@ -37,6 +37,16 @@ if command -v readlink >/dev/null 2>&1 && readlink -f "$0" >/dev/null 2>&1; then
 else
     # Fallback for POSIX sh (works on macOS, BSD, and other Unix systems)
     SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+fi
+
+# Source the JSON parser library
+if [ -f "$SCRIPT_DIR/json-parser.sh" ]; then
+    . "$SCRIPT_DIR/json-parser.sh"
+elif [ -f "./json-parser.sh" ]; then
+    . "./json-parser.sh"
+else
+    log_error "json-parser.sh not found. Please ensure it is in the same directory as this script."
+    exit 1
 fi
 
 # Color codes for output
@@ -99,7 +109,7 @@ Examples:
   ./read-network-settings.sh -o compact
 
 Requirements:
-  - jq for JSON parsing
+  - Standard POSIX tools (awk, sed, grep) - available by default on Android
   - Android system with networking tools (getprop, settings, etc.)
 
 EOF
@@ -150,9 +160,24 @@ parse_args() {
 check_requirements() {
     log_verbose "Checking requirements..."
     
-    # Check for jq (JSON parser)
-    if ! command -v jq >/dev/null 2>&1; then
-        log_error "jq is not installed. Please install jq to parse JSON configuration."
+    # Check for standard POSIX tools (awk, sed, grep)
+    local missing_tools=""
+    
+    if ! command -v awk >/dev/null 2>&1; then
+        missing_tools="$missing_tools awk"
+    fi
+    
+    if ! command -v sed >/dev/null 2>&1; then
+        missing_tools="$missing_tools sed"
+    fi
+    
+    if ! command -v grep >/dev/null 2>&1; then
+        missing_tools="$missing_tools grep"
+    fi
+    
+    if [ -n "$missing_tools" ]; then
+        log_error "Required tools not found:$missing_tools"
+        log_error "These tools are needed for JSON parsing and should be available on Android by default."
         exit 1
     fi
     
@@ -355,7 +380,7 @@ print_compact() {
 process_system_properties() {
     log_verbose "Reading system properties..."
     
-    local categories=$(jq -r '.categories.system_properties | keys[]' "$CONFIG_FILE" 2>/dev/null || echo "")
+    local categories=$(json_get_categories "$CONFIG_FILE" "system_properties")
     
     if [ -z "$categories" ]; then
         log_warn "No system properties found in configuration"
@@ -374,7 +399,7 @@ process_system_properties() {
         log_verbose "Processing category: $category"
         
         # Get all properties in this category
-        local properties=$(jq -r ".categories.system_properties.$category | keys[]" "$CONFIG_FILE" 2>/dev/null || echo "")
+        local properties=$(json_get_category_keys "$CONFIG_FILE" "system_properties" "$category")
         
         local has_properties=0
         for prop in $properties; do
@@ -396,8 +421,13 @@ process_system_properties() {
         
         for prop in $properties; do
             local current_value=$(read_system_property "$prop")
-            local default_value=$(jq -r ".categories.system_properties.$category.\"$prop\".default // \"\"" "$CONFIG_FILE" 2>/dev/null)
-            local description=$(jq -r ".categories.system_properties.$category.\"$prop\".description // \"No description\"" "$CONFIG_FILE" 2>/dev/null)
+            local default_value=$(json_get_field_value "$CONFIG_FILE" "system_properties" "$category" "$prop" "default")
+            local description=$(json_get_field_value "$CONFIG_FILE" "system_properties" "$category" "$prop" "description")
+            
+            # Use default description if empty
+            if [ -z "$description" ]; then
+                description="No description"
+            fi
             
             if [ "$OUTPUT_FORMAT" = "json" ]; then
                 add_json_property "$prop" "$current_value" "$default_value" "$description" "$first_in_category"
@@ -419,7 +449,7 @@ process_system_properties() {
 process_kernel_parameters() {
     log_verbose "Reading kernel parameters..."
     
-    local categories=$(jq -r '.categories.kernel_parameters | keys[]' "$CONFIG_FILE" 2>/dev/null || echo "")
+    local categories=$(json_get_categories "$CONFIG_FILE" "kernel_parameters")
     
     if [ -z "$categories" ]; then
         log_warn "No kernel parameters found in configuration"
@@ -437,7 +467,7 @@ process_kernel_parameters() {
         log_verbose "Processing kernel category: $category"
         
         # Get all parameters in this category
-        local params=$(jq -r ".categories.kernel_parameters.$category | keys[]" "$CONFIG_FILE" 2>/dev/null || echo "")
+        local params=$(json_get_category_keys "$CONFIG_FILE" "kernel_parameters" "$category")
         
         local has_params=0
         for param in $params; do
@@ -459,8 +489,13 @@ process_kernel_parameters() {
         
         for param in $params; do
             local current_value=$(read_kernel_parameter "$param")
-            local default_value=$(jq -r ".categories.kernel_parameters.$category.\"$param\".default // \"\"" "$CONFIG_FILE" 2>/dev/null)
-            local description=$(jq -r ".categories.kernel_parameters.$category.\"$param\".description // \"No description\"" "$CONFIG_FILE" 2>/dev/null)
+            local default_value=$(json_get_field_value "$CONFIG_FILE" "kernel_parameters" "$category" "$param" "default")
+            local description=$(json_get_field_value "$CONFIG_FILE" "kernel_parameters" "$category" "$param" "description")
+            
+            # Use default description if empty
+            if [ -z "$description" ]; then
+                description="No description"
+            fi
             
             if [ "$OUTPUT_FORMAT" = "json" ]; then
                 add_json_property "$param" "$current_value" "$default_value" "$description" "$first_in_category"
@@ -482,7 +517,7 @@ process_kernel_parameters() {
 process_environment_variables() {
     log_verbose "Reading environment variables..."
     
-    local categories=$(jq -r '.categories.environment_variables | keys[]' "$CONFIG_FILE" 2>/dev/null || echo "")
+    local categories=$(json_get_categories "$CONFIG_FILE" "environment_variables")
     
     if [ -z "$categories" ]; then
         log_warn "No environment variables found in configuration"
@@ -500,7 +535,7 @@ process_environment_variables() {
         log_verbose "Processing environment category: $category"
         
         # Get all variables in this category
-        local vars=$(jq -r ".categories.environment_variables.$category | keys[]" "$CONFIG_FILE" 2>/dev/null || echo "")
+        local vars=$(json_get_category_keys "$CONFIG_FILE" "environment_variables" "$category")
         
         local has_vars=0
         for var in $vars; do
@@ -522,8 +557,13 @@ process_environment_variables() {
         
         for var in $vars; do
             local current_value=$(read_environment_variable "$var")
-            local default_value=$(jq -r ".categories.environment_variables.$category.\"$var\".default // \"\"" "$CONFIG_FILE" 2>/dev/null)
-            local description=$(jq -r ".categories.environment_variables.$category.\"$var\".description // \"No description\"" "$CONFIG_FILE" 2>/dev/null)
+            local default_value=$(json_get_field_value "$CONFIG_FILE" "environment_variables" "$category" "$var" "default")
+            local description=$(json_get_field_value "$CONFIG_FILE" "environment_variables" "$category" "$var" "description")
+            
+            # Use default description if empty
+            if [ -z "$description" ]; then
+                description="No description"
+            fi
             
             if [ "$OUTPUT_FORMAT" = "json" ]; then
                 add_json_property "$var" "$current_value" "$default_value" "$description" "$first_in_category"
@@ -545,7 +585,7 @@ process_environment_variables() {
 process_android_settings() {
     log_verbose "Reading Android settings..."
     
-    local categories=$(jq -r '.categories.android_specific | keys[]' "$CONFIG_FILE" 2>/dev/null || echo "")
+    local categories=$(json_get_categories "$CONFIG_FILE" "android_specific")
     
     if [ -z "$categories" ]; then
         log_warn "No Android settings found in configuration"
@@ -563,7 +603,7 @@ process_android_settings() {
         log_verbose "Processing Android settings category: $category"
         
         # Get all settings in this category
-        local settings_keys=$(jq -r ".categories.android_specific.$category | keys[]" "$CONFIG_FILE" 2>/dev/null || echo "")
+        local settings_keys=$(json_get_category_keys "$CONFIG_FILE" "android_specific" "$category")
         
         local has_settings=0
         for setting_key in $settings_keys; do
@@ -584,8 +624,13 @@ process_android_settings() {
         fi
         
         for setting_key in $settings_keys; do
-            local default_value=$(jq -r ".categories.android_specific.$category.\"$setting_key\".default // \"\"" "$CONFIG_FILE" 2>/dev/null)
-            local description=$(jq -r ".categories.android_specific.$category.\"$setting_key\".description // \"No description\"" "$CONFIG_FILE" 2>/dev/null)
+            local default_value=$(json_get_field_value "$CONFIG_FILE" "android_specific" "$category" "$setting_key" "default")
+            local description=$(json_get_field_value "$CONFIG_FILE" "android_specific" "$category" "$setting_key" "description")
+            
+            # Use default description if empty
+            if [ -z "$description" ]; then
+                description="No description"
+            fi
             
             # Parse namespace and key from setting_key (format: settings.namespace.key)
             case "$setting_key" in
