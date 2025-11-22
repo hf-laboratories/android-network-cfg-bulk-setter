@@ -19,7 +19,8 @@
 
 ### System Requirements
 - Android system or Linux system with Android networking tools
-- `jq` - JSON parser (for reading configuration file)
+- Standard POSIX tools (awk, sed, grep) - available by default on Android
+- `json-parser.sh` - included JSON parser library (no external dependencies)
 
 ### Optional Tools
 - `getprop` - For reading system properties (Android)
@@ -27,19 +28,12 @@
 
 ## Installation
 
-1. Ensure the script is executable:
+1. Ensure the scripts are executable:
    ```bash
-   chmod +x read-network-settings.sh
+   chmod +x read-network-settings.sh json-parser.sh
    ```
 
-2. Install `jq` if not already available:
-   ```bash
-   # On Debian/Ubuntu
-   apt-get install jq
-   
-   # On Android (with Termux)
-   pkg install jq
-   ```
+2. Ensure both `read-network-settings.sh` and `json-parser.sh` are in the same directory.
 
 3. Ensure the `android-network-keys.json` configuration file is in the same directory as the script (or specify a custom path with `-f`).
 
@@ -480,16 +474,13 @@ cd /data/local/tmp
 
 ## Troubleshooting
 
-### "jq is not installed"
+### "Required tools not found"
 
-Install jq:
-```bash
-# Debian/Ubuntu (requires root/sudo)
-sudo apt-get install jq
+The script requires standard POSIX tools (awk, sed, grep) which should be available by default on Android. If you get this error on a non-Android Linux system, install the missing tools using your package manager.
 
-# Android with Termux
-pkg install jq
-```
+### "json-parser.sh not found"
+
+Ensure both `read-network-settings.sh` and `json-parser.sh` are in the same directory. Both files are required for the script to work.
 
 ### Empty Values for System Properties
 

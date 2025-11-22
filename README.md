@@ -16,6 +16,7 @@ This repository documents Android networking configuration keys including:
 
 - **[NETWORK_KEYS.md](NETWORK_KEYS.md)** - Human-readable documentation with tables and usage examples
 - **[android-network-keys.json](android-network-keys.json)** - Machine-readable JSON format
+- **[json-parser.sh](json-parser.sh)** - POSIX-compliant JSON parser (no external dependencies)
 - **[read-network-settings.sh](read-network-settings.sh)** - Shell script to read current network settings
 - **[READ_SCRIPT_README.md](READ_SCRIPT_README.md)** - Documentation for the network settings reader script
 - **[apply-network-defaults.sh](apply-network-defaults.sh)** - Shell script to apply default network settings
