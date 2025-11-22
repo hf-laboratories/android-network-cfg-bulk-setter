@@ -25,6 +25,25 @@ A comprehensive collection of property keys, environment variables, and configur
 - [Android Settings](#android-settings)
 - [Usage Notes](#usage-notes)
 
+## Default Values
+
+Each configuration key in this documentation includes a **default value** field in the JSON format (`android-network-keys.json`). These default values represent best-effort default configurations that can be used to:
+
+- **Reset network settings** to a known good state
+- **Understand baseline configurations** for Android devices
+- **Troubleshoot networking issues** by comparing against defaults
+- **Initialize network settings** in custom Android builds or testing environments
+
+The default values are chosen to be:
+- **Safe and non-disruptive** - Will not break existing functionality
+- **Commonly used** - Represent typical Android device configurations
+- **Device-agnostic** - Work across different Android devices and versions where possible
+
+**Note:** Some configuration keys have empty string defaults (`""`) when:
+- The value is device-specific (e.g., MAC addresses, operator information)
+- The value is dynamically assigned (e.g., DHCP-assigned IPs, DNS servers)
+- The value should remain unset by default (e.g., proxy settings)
+
 ## System Properties
 
 System properties can be accessed using the `getprop` command or the `android.os.SystemProperties` API.

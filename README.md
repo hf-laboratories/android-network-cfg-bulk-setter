@@ -10,6 +10,7 @@ This repository documents Android networking configuration keys including:
 - Kernel parameters (`/proc/sys/net/`)
 - Network interface files (`/sys/class/net/`)
 - Android Settings database entries
+- **Best-effort default values** for each configuration key to enable resetting to defaults
 
 ## Documentation
 
@@ -67,6 +68,30 @@ The collection is organized into the following categories:
 - **Testing** - Simulating different network conditions
 - **Documentation** - Reference for Android networking internals
 - **Automation** - Scripting network configuration changes
+- **Reset to defaults** - Using provided default values to restore network settings to a known good state
+
+## Default Values
+
+Each configuration key includes a `default` field in the JSON format that represents a best-effort default value. These defaults can be used to:
+
+- **Restore network settings** to a baseline configuration
+- **Initialize devices** with safe, commonly-used settings
+- **Troubleshoot issues** by comparing current values against defaults
+- **Automate configuration** in testing and development environments
+
+Example from `android-network-keys.json`:
+```json
+{
+  "wifi.interface": {
+    "description": "WiFi network interface name",
+    "type": "string",
+    "example": "wlan0",
+    "default": "wlan0"
+  }
+}
+```
+
+For more details, see the [Default Values section](NETWORK_KEYS.md#default-values) in the documentation.
 
 ## Contributing
 
