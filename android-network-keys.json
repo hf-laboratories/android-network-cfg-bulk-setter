@@ -51,8 +51,8 @@
         "net.lte.ims.data.enabled": {
           "description": "LTE IMS data enabled status",
           "type": "boolean",
-          "example": "true",
-          "default": "true"
+          "example": "1",
+          "default": "1"
         },
         "ril.subscription.types": {
           "description": "SIM subscription types",
@@ -143,8 +143,8 @@
         "net.tethering.noprovisioning": {
           "description": "Disable tethering provisioning check",
           "type": "boolean",
-          "example": "true",
-          "default": "false"
+          "example": "0",
+          "default": "0"
         },
         "tether.interface": {
           "description": "Tethering interface name",
@@ -163,8 +163,8 @@
         "persist.net.doxlat": {
           "description": "Enable XLAT (IPv4 over IPv6)",
           "type": "boolean",
-          "example": "true",
-          "default": "true"
+          "example": "1",
+          "default": "1"
         }
       },
       "dhcp": {
@@ -199,8 +199,8 @@
         "net.redirect_socket_calls.hooked": {
           "description": "Socket call redirection hook status",
           "type": "boolean",
-          "example": "true",
-          "default": "true"
+          "example": "1",
+          "default": "1"
         },
         "persist.netd.stable_secret": {
           "description": "Network daemon stable secret for IPv6",
