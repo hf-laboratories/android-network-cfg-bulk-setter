@@ -160,8 +160,8 @@ Environment variables that affect network configuration:
 
 | Variable | Description | Type | Example |
 |----------|-------------|------|---------|
-| `ANDROID_DNS_MODE` | DNS resolution mode | string | `local` |
-| `ANDROID_SOCKET_*` | Socket file descriptors (various sockets) | string | `ANDROID_SOCKET_zygote` |
+| `ANDROID_DNS_MODE` | DNS resolution mode (values: 'local' for device-local resolution, 'remote' for network DNS servers) | string | `local` |
+| `ANDROID_SOCKET_*` | Socket file descriptor numbers for named sockets (e.g., ANDROID_SOCKET_zygote contains the FD number) | integer | `10` |
 | `HOSTNAME` | Device hostname | string | `localhost` |
 | `http_proxy` | HTTP proxy URL | string | `http://proxy.example.com:8080` |
 | `https_proxy` | HTTPS proxy URL | string | `https://proxy.example.com:8080` |
@@ -183,7 +183,7 @@ Network-related kernel parameters accessible via `/proc/sys/net/`:
 | `/proc/sys/net/ipv4/tcp_keepalive_probes` | Number of TCP keepalive probes | integer | `9` |
 | `/proc/sys/net/ipv4/tcp_fin_timeout` | TCP FIN timeout | integer | `60` |
 | `/proc/sys/net/ipv4/tcp_tw_reuse` | Enable TCP TIME_WAIT socket reuse | boolean | `1` |
-| `/proc/sys/net/ipv4/tcp_tw_recycle` | Enable fast TCP TIME_WAIT socket recycling | boolean | `0` |
+| `/proc/sys/net/ipv4/tcp_tw_recycle` | Enable fast TCP TIME_WAIT socket recycling (DEPRECATED: removed in Linux kernel 4.12+, unsafe with NAT) | boolean | `0` |
 | `/proc/sys/net/ipv4/tcp_syncookies` | Enable TCP SYN cookies | boolean | `1` |
 | `/proc/sys/net/ipv4/tcp_max_syn_backlog` | Maximum SYN backlog queue size | integer | `2048` |
 | `/proc/sys/net/ipv4/tcp_rmem` | TCP read buffer sizes (min, default, max) | string | `4096 87380 6291456` |

@@ -310,14 +310,14 @@
     "environment_variables": {
       "network_config": {
         "ANDROID_DNS_MODE": {
-          "description": "DNS resolution mode",
+          "description": "DNS resolution mode (values: 'local' for device-local resolution, 'remote' for network DNS servers)",
           "type": "string",
           "example": "local"
         },
         "ANDROID_SOCKET_*": {
-          "description": "Socket file descriptors (various sockets)",
-          "type": "string",
-          "example": "ANDROID_SOCKET_zygote"
+          "description": "Socket file descriptor numbers for named sockets (e.g., ANDROID_SOCKET_zygote contains the FD number)",
+          "type": "integer",
+          "example": "10"
         },
         "HOSTNAME": {
           "description": "Device hostname",
@@ -384,7 +384,7 @@
           "example": "1"
         },
         "/proc/sys/net/ipv4/tcp_tw_recycle": {
-          "description": "Enable fast TCP TIME_WAIT socket recycling",
+          "description": "Enable fast TCP TIME_WAIT socket recycling (DEPRECATED: removed in Linux kernel 4.12+, unsafe with NAT)",
           "type": "boolean",
           "example": "0"
         },
