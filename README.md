@@ -10,6 +10,7 @@ This repository documents Android networking configuration keys including:
 - Kernel parameters (`/proc/sys/net/`)
 - Network interface files (`/sys/class/net/`)
 - Android Settings database entries
+- **Best-effort default values** for each configuration key to enable resetting to defaults
 
 ## Documentation
 
@@ -47,18 +48,16 @@ The collection is organized into the following categories:
 
 1. **WiFi** - WiFi interface properties and configuration
 2. **Mobile Data** - Cellular network properties (GSM, LTE, etc.)
-3. **DNS** - DNS server configuration
-4. **Network Interfaces** - Interface-specific settings and TCP buffer sizes
-5. **Proxy** - HTTP/HTTPS proxy configuration
-6. **VPN** - VPN-related properties
-7. **Tethering** - USB/WiFi/Bluetooth tethering
-8. **IPv6** - IPv6 configuration and settings
-9. **DHCP** - DHCP client configuration
-10. **Radio** - Radio interface layer (RIL) properties
-11. **Connectivity** - General connectivity settings
-12. **Routing** - Network routing configuration
-13. **Kernel Parameters** - Linux kernel networking parameters
-14. **Android Settings** - Android Settings database entries
+3. **Network Interfaces** - Interface-specific settings and TCP buffer sizes
+4. **Proxy** - HTTP/HTTPS proxy configuration
+5. **VPN** - VPN-related properties
+6. **Tethering** - USB/WiFi/Bluetooth tethering
+7. **IPv6** - IPv6 configuration and settings
+8. **DHCP** - DHCP client configuration
+9. **Radio** - Radio interface layer (RIL) properties
+10. **Connectivity** - General connectivity settings
+11. **Kernel Parameters** - Linux kernel networking parameters
+12. **Android Settings** - Android Settings database entries
 
 ## Use Cases
 
@@ -67,6 +66,30 @@ The collection is organized into the following categories:
 - **Testing** - Simulating different network conditions
 - **Documentation** - Reference for Android networking internals
 - **Automation** - Scripting network configuration changes
+- **Reset to defaults** - Using provided default values to restore network settings to a known good state
+
+## Default Values
+
+Each configuration key includes a `default` field in the JSON format that represents a best-effort default value. These defaults can be used to:
+
+- **Restore network settings** to a baseline configuration
+- **Initialize devices** with safe, commonly-used settings
+- **Troubleshoot issues** by comparing current values against defaults
+- **Automate configuration** in testing and development environments
+
+Example from `android-network-keys.json`:
+```json
+{
+  "wifi.interface": {
+    "description": "WiFi network interface name",
+    "type": "string",
+    "example": "wlan0",
+    "default": "wlan0"
+  }
+}
+```
+
+For more details, see the [Default Values section](NETWORK_KEYS.md#default-values) in the documentation.
 
 ## Contributing
 
